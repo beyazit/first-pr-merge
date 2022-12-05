@@ -1,3 +1,6 @@
+/**
+ * @param {import("probot").Application} app 
+ */
 module.exports = app => {
   app.on('pull_request.closed', async context => {
     if (context.payload.pull_request.merged) {
@@ -11,7 +14,7 @@ module.exports = app => {
         try {
           const config = await context.config('config.yml')
           if (config.firstPRMergeComment) {
-            context.github.issues.createComment(context.issue({ body: config.firstPRMergeComment }))
+            context.github.issues.createComment(context.issue({ body: config.firstPRMergeComment.replace(new RegExp("{id}", "g"), context.payload.pull_request.id) }))
           }
         } catch (err) {
           if (err.code !== 404) {
